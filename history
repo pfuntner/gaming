@@ -9,6 +9,12 @@ import argparse
 
 class Game(object):
   bfont_regexp = re.compile('<b><font[^>]*>.*</font>(.+)</b>', flags=re.IGNORECASE)
+  replacements = {
+    '&amp;': '&',
+    '&gt;': '>',
+    '&lt;': '<',
+    '&quot;': '\'',
+  }
 
   def __init__(self, category, game_name, user_name, user_id, game_id, winloss, moves, color, end_date, end_time):
     (
@@ -40,6 +46,8 @@ class Game(object):
     if match:
       user = match.group(1)
     user = ''.join([c if (ord(c) < 128) else (r'\x{:02x}'.format(ord(c))) for c in user])
+    for (key, value) in cls.replacements.items():
+      user = user.replace(key, value)
     return user
 
   def __str__(self):
@@ -78,7 +86,7 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
           tokens = re.split('\|', s2)
           if match:
             pages = len(tokens) - 1
-            log.info('{pages} pages')
+            log.info('{pages} pages'.format(**locals()))
 
       matches = re.findall('^var d\d+="([^"]+)";$', html, flags=re.MULTILINE)
       data = ''.join(matches[2:])
