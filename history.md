@@ -10,7 +10,7 @@ The script:
     1. For the wins, losses, and draws for each game:
       1. Opens all summary pages and collects information about each game: opponent, win/loss, etc.
 
-## Syntax
+## Usage
 
 ## Requirements
 
