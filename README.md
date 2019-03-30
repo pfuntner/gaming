@@ -1,2 +1,14 @@
 # iyt
-Scripts related to ItsYourTurn
+Repository for scripts related to ItsYourTurn (aka IYT)
+
+[IsYourTurn.com](https://itsyourturn.com) is a site where people can play a variety of strategy games in a turn-based manner:
+  - Games are usually not completed in a single day - many, especially certain types of games, only last a few days but I've personally played games that lasted months and even more than a year
+  - Two players play each game but the players do not have to be online at the same time.  Each player takes one turn at a time when they are able.  Games can time out if a player does not play their turn within a time limit
+
+I am just a software developer who plays games at IYT.  I don't work for them and I don't develop code for their site.
+
+## Scripts
+
+| Script | Description |
+| ------ | ----------- |
+| `history` | Collects your overall game history and renders to a file format |
