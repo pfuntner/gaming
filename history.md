@@ -82,5 +82,5 @@ $
 
 - The script only collects the overall infomation of a game.  It does not collect information about individual moves.
 - You will probably want to redirect stdout to a file that will store your history.
-- CSV might be the easiest method to use to import into a database.  One of the things on my _to do list_ is to write a tool to import the data
+- CSV might be the easiest method to use to import into a database.  I haven't tried it yet but you should be able to load the history into a spreadsheet such as Excel.  One of the things on my _to do list_ is to write a tool to import the data.
 - The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,171 games at the time of writing this page but only 54,916 are avaiable in the history pages.
