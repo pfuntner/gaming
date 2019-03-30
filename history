@@ -1,0 +1,192 @@
+#! /usr/bin/env python 
+import re
+import sys
+import pdb
+import logging
+import requests
+import argparse
+
+class Game(object):
+  def __init__(self, category, game_name, user_name, user_id, game_id, winloss, moves, color, end_date, end_time):
+    (
+      self.category,
+      self.game_name,
+      self.user_name,
+      self.user_id,
+      self.game_id,
+      self.winloss,
+      self.moves,
+      self.color,
+      self.end_date,
+      self.end_time) = (
+        category,
+        game_name,
+        user_name,
+        user_id,
+        game_id,
+        winloss,
+        moves,
+        color,
+        end_date,
+        end_time
+      )
+
+
+  def __str__(self):
+    return str((self.category, self.game_name, self.user_name, self.user_id, self.game_id, self.winloss, self.color,
+                self.end_date, self.end_time))
+
+def get_userid(s):
+  groups = re.findall('^var d\d+="(.+)";$', s, flags=re.MULTILINE)
+  if groups:
+    match = re.search('^1\^(\d+)\^', groups[-1])
+    if match:
+      return match.group(1)
+
+  log.critical('Cannot find IYT userid in {s!r}'.format(**locals()))
+  exit(1)
+
+def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, page=0, pages=None):
+  log.info('Getting {category} {game_name} {winloss} games ({page}/{pages})'.format(**locals()))
+  games = []
+
+  if col_pos < len(cols):
+    href_match = href_regexp.search(cols[col_pos])
+    if href_match:
+      url = href_match.group(1)
+      if not url.startswith('https://'):
+        url = BASE_URL + url
+      if page:
+        url += '&st=' + str(page*100)
+      html = session.get(url).text
+
+      if not pages:
+        # figure out how many pages there are
+        match = total_games_regexp.search(html)
+        if match:
+          s2 = match.group(1)
+          tokens = re.split('\|', s2)
+          if match:
+            pages = len(tokens) - 1
+            log.info('{pages} pages')
+
+      matches = re.findall('^var d\d+="([^"]+)";$', html, flags=re.MULTILINE)
+      data = ''.join(matches[2:])
+      tokens = data.split('^')
+      curr = 2
+      """
+      0002 = {unicode} u'15300064812762'           gameid
+      0003 = {unicode} u'15200000663034'           userid
+      0004 = {unicode} u'Donna D'                  user
+      0005 = {unicode} u'Anti-Backgammon'          game
+      0006 = {unicode} u'189'                      moves
+      0007 = {unicode} u'0'                        ?
+      0008 = {unicode} u'12/16/18'                 date
+      0009 = {unicode} u'16:58:00'                 time
+      0010 = {unicode} u'0'                        ?
+      0011 = {unicode} u'white'                    color
+      """
+      while curr < len(tokens):
+        games.append(Game(category, game_name, tokens[curr+2], tokens[curr+1], tokens[curr], winloss, tokens[curr+4],
+                          tokens[curr+9], tokens[curr+6], tokens[curr+7]))
+        log.debug('Scraped: {game}'.format(game=str(games[-1])))
+        curr += 12
+
+      # log.warning('Only doing first page!')
+      if pages and page < pages:
+        games += get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, page=page+1, pages=pages)
+
+  if games:
+    if page == 0:
+      log.info('{count} {category} {game_name} {winloss} games'.format(count=len(games), **locals()))
+    else:
+      log.info('{count} {category} {game_name} {winloss} games (page {page})'.format(count=len(games), **locals()))
+  else:
+    log.info('No {category} {game_name} {winloss} games'.format(**locals()))
+  return games
+
+def get_games_by_category(session, url, category):
+  log.info('Getting {category} games'.format(**locals()))
+  games = []
+
+  html = session.post(url).text
+  match1 = re.search('<table>\s*<center>\s*<table', html, flags=re.IGNORECASE)
+  if match1:
+    match2 = re.search('</table>', html[match1.start(0):], flags=re.IGNORECASE)
+    if match2:
+      table = html[match1.start(0):match1.start(0)+match2.end(0)]
+      rows = tr_regexp.split(table)
+      for row in rows[2:-1]:
+        cols = td_regexp.split(row)
+        log.debug('row: {row!r}, cols: {cols}'.format(**locals()))
+        game_name_match = bold_regexp.search(cols[0])
+        game_name = game_name_match.group(1) if game_name_match else None
+        log.debug('Parsed {col!r} with {pat} => {game_name}'.format(
+          col=cols[0],
+          pat=bold_regexp.pattern,
+          **locals()
+        ))
+        if game_name:
+          # log.debug((game_name, tuple(enumerate(cols))))
+          games += get_games_by_winloss(session, category, game_name, 'Win', cols, 1)
+          games += get_games_by_winloss(session, category, game_name, 'Loss', cols, 2)
+          games += get_games_by_winloss(session, category, game_name, 'Draw', cols, 3)
+
+  log.info('{count} {category} games'.format(count=len(games), **locals()))
+
+  return games
+
+def dynaload(path):
+  url = "https://raw.githubusercontent.com/{path}".format(**locals())
+  log.debug('Fetching {url}'.format(**locals()))
+  req = requests.get(url)
+  if req.status_code != 200:
+    sys.stderr.write("Error loading {url}:\n".format(**locals()))
+    for name in vars(req):
+      value = getattr(req, name)
+      sys.stderr.write("  {name}: {value}\n".format(**locals()))
+    exit(1)
+  return req.text.replace('"__main__"', '"__static_main__"')
+
+BASE_URL = 'https://itsyourturn.com'
+
+tr_regexp = re.compile('</tr>', flags=re.IGNORECASE)
+td_regexp = re.compile('</td>', flags=re.IGNORECASE)
+bold_regexp = re.compile('<b>([^<]+)</b>', flags=re.IGNORECASE)
+href_regexp = re.compile('href="([^"]+)"', flags=re.IGNORECASE)
+total_games_regexp = re.compile('Total Game Count: (.+)$', re.MULTILINE)
+
+parser = argparse.ArgumentParser(description='ItsYourTurn frontend')
+parser.add_argument('-v', '--verbose', dest='verbose', action='count', help='Display more debugging')
+args = parser.parse_args()
+
+logging.basicConfig(format='%(asctime)s %(levelname)s %(pathname)s:%(lineno)d %(funcName)s %(msg)s')
+log = logging.getLogger('iyt')
+log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+
+exec(dynaload('https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py'))
+store = SecureKeyValues('iyt', ssh=True)
+
+log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+
+payload = {
+  'login': store.store['user'], 
+  'passwd': store.store['password'], 
+}
+
+session = requests.Session()
+session.auth = (store.store['user'], store.store['password'])
+
+result = session.post(
+  BASE_URL + '/iyt.dll/loginverify',
+  data=payload,
+  headers=dict(referer=BASE_URL),
+)
+
+iyt_userid = get_userid(session.get(BASE_URL).text)
+log.info('Logged in with {iyt_userid}'.format(**locals()))
+
+games = get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=0'.format(**locals()), 'Regular')
+games += get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=1'.format(**locals()), 'Tournament')
+games += get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=2'.format(**locals()), 'Ladder')
+log.info('{count:,} total games'.format(count=len(games)))
