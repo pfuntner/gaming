@@ -12,3 +12,7 @@ I am just a software developer who plays games at IYT.  I don't work for them an
 | Script | Description |
 | ------ | ----------- |
 | [`history`](history.md) | Collects your overall game history and renders to a file format |
+
+## Discussion
+
+I created a message board at http://itsyourturn.freeforums.net/ for IYT users and we can talk about the tools there.
