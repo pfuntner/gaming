@@ -10,6 +10,19 @@ The script:
     1. For the wins, losses, and draws for each game:
       1. Opens all summary pages and collects information about each game: opponent, win/loss, etc.
 
+## Isn't this already available?
+Well, yes... the tool actually just parses information off the normal pages on the site.  It doesn't do anything that you can't do but the script does a thorough job much easier and without human error or frustration.
+
+There are basically two choices for history on IYT:
+  1. Recently completed games.  This is very useful but still can be awkward for some purposes
+    1. It's just a snapshot of recent games
+    2. It's not easy collate the games for various purposes.  How about all your games against a specific user?  You can't sort the columns and you're stuck with chronological lists that are organized by wins, losses, or draws.  When I look, I often lose my place and wonder _ok, I see this completed game from the user - was this a win or a loss?_.  No thanks!
+  2. You can look at the entire history of all your games but it's organized by category (regular, tournament, ladder), type of game, and win/loss/draw.  Plus, there can be up to ten pages for a particular category, type of game, and outcome.
+ 
+The script uses the second method of looking at your entire history but automate the navigation through the pages and collecting up the information.  I'm a strong believer that computers are meant to make things easier for people!
+ 
+Bottom line, the tool is useful to me, it makes sense to me, and I will use it.  If others find it useful, great.  If you don't find a use for it, that's cool too.
+
 ## Usage
 
 ## Requirements
