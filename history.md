@@ -39,6 +39,7 @@ To set up the credentials:
 | ------ | ----------- | ------- |
 | `-c` or `--csv` | Renders history in [CSV (_comma separated values_) format](https://www.wikiwand.com/en/Comma-separated_values) | The default is to use this method |
 | `-j` or `--json` | Renders history in [JSON format](https://www.wikiwand.com/en/JSON) | The default is to render in CSV format |
+| `-v` or `--version` | Enables more debugging.  One instance of the option enable `INFO` messages.  Two instances enable `DEBUG` messages.  | The default is to display `WARNING`, `ERROR`, and `CRITICAL` messages |
 
 ## Examples
 
@@ -84,3 +85,4 @@ $
 - You will probably want to redirect stdout to a file that will store your history.
 - CSV might be the easiest method to use to import into a database.  I haven't tried it yet but you should be able to load the history into a spreadsheet such as Excel.  One of the things on my _to do list_ is to write a tool to import the data.
 - The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,171 games at the time of writing this page but only 54,916 are avaiable in the history pages.
+- Depending on how many games you have, the script could take several seconds to run.  On my machine, it takes slightly less than a minute to collect the history for 54,916 games.  By enabling `INFO` messages, you will see the script progress through your history.
