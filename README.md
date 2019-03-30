@@ -11,4 +11,4 @@ I am just a software developer who plays games at IYT.  I don't work for them an
 
 | Script | Description |
 | ------ | ----------- |
-| `history` | Collects your overall game history and renders to a file format |
+| [`history`](history.md) | Collects your overall game history and renders to a file format |
