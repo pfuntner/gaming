@@ -1,12 +1,15 @@
 #! /usr/bin/env python 
 import re
 import sys
-import pdb
+import csv
+import json
 import logging
 import requests
 import argparse
 
 class Game(object):
+  bfont_regexp = re.compile('<b><font[^>]*>.*</font>(.+)</b>', flags=re.IGNORECASE)
+
   def __init__(self, category, game_name, user_name, user_id, game_id, winloss, moves, color, end_date, end_time):
     (
       self.category,
@@ -21,7 +24,7 @@ class Game(object):
       self.end_time) = (
         category,
         game_name,
-        user_name,
+        self.normalize_user(user_name),
         user_id,
         game_id,
         winloss,
@@ -31,6 +34,13 @@ class Game(object):
         end_time
       )
 
+  @classmethod
+  def normalize_user(cls, user):
+    match = cls.bfont_regexp.search(user)
+    if match:
+      user = match.group(1)
+    user = ''.join([c if (ord(c) < 128) else (r'\x{:02x}'.format(ord(c))) for c in user])
+    return user
 
   def __str__(self):
     return str((self.category, self.game_name, self.user_name, self.user_id, self.game_id, self.winloss, self.color,
@@ -156,9 +166,17 @@ bold_regexp = re.compile('<b>([^<]+)</b>', flags=re.IGNORECASE)
 href_regexp = re.compile('href="([^"]+)"', flags=re.IGNORECASE)
 total_games_regexp = re.compile('Total Game Count: (.+)$', re.MULTILINE)
 
-parser = argparse.ArgumentParser(description='ItsYourTurn frontend')
+parser = argparse.ArgumentParser(description='ItsYourTurn history collector')
+
+group = parser.add_mutually_exclusive_group()
+group.add_argument('-c', '--csv', dest='csv', action='store_true', help='Render games in CSV form')
+group.add_argument('-j', '--json', dest='json', action='store_true', help='Render games in JSON form')
+
 parser.add_argument('-v', '--verbose', dest='verbose', action='count', help='Display more debugging')
 args = parser.parse_args()
+
+if not (args.json or args.csv):
+  args.csv = True
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(pathname)s:%(lineno)d %(funcName)s %(msg)s')
 log = logging.getLogger('iyt')
@@ -189,4 +207,43 @@ log.info('Logged in with {iyt_userid}'.format(**locals()))
 games = get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=0'.format(**locals()), 'Regular')
 games += get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=1'.format(**locals()), 'Tournament')
 games += get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=2'.format(**locals()), 'Ladder')
-log.info('{count:,} total games'.format(count=len(games)))
+
+sys.stderr.write('There are {count:,} total games\n'.format(count=len(games)))
+
+if args.csv:
+  writer = csv.writer(sys.stdout)
+  writer.writerow(('Category', 'Game', 'GameID', 'User', 'UserID', 'WinLoss', 'Moves', 'Color', 'Date', 'Time'))
+  for game in games:
+    writer.writerow((
+      game.category,
+      game.game_name,
+      game.game_id,
+      game.user_name,
+      game.user_id,
+      game.winloss,
+      game.moves,
+      game.color,
+      game.end_date,
+      game.end_time,
+    ))
+else:
+  print json.dumps([
+    {
+      'category': game.category,
+      'game': {
+        'id': game.game_id,
+        'name': game.game_name,
+      },
+      'user': {
+        'id': game.user_id,
+        'name': game.user_name,
+      },
+      'win': game.winloss == 'Win',
+      'color': game.color,
+      'moves': game.moves,
+      'end': {
+        'date': game.end_date,
+        'time': game.end_time,
+      }
+    } for game in games
+  ])
