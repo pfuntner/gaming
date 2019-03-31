@@ -12,7 +12,8 @@ I am just a software developer who plays games at IYT.  I don't work for them an
 | Script | Description |
 | ------ | ----------- |
 | [`history`](history.md) | Collects your overall game history and renders to a file format |
+| [`history2mysql`](history2mysql.md) | Uploads overall game history (produced by `history` script) to MySQL database |
 
 ## Discussion
 
-I created a message board at http://itsyourturn.freeforums.net/ for IYT users and we can talk about the tools there.
+I created a message board at [`itsyourturn.freeforums.net`](http://itsyourturn.freeforums.net) for IYT users and we can talk about the tools there.
