@@ -86,8 +86,9 @@ Once the history is in the database, there are a lot of things you can do with i
 ```
 
 ### Is there an advantage to who moves first?
-Sometimes I hear that a player has an advantage if they move first or second, especially with reversi/othello.  Honestly I've never really seen that and don't even remember who is supposed to have an advantage.  But I can look at my history:
+Sometimes I hear that a player has an advantage if they move first or second, especially with Reversi/Othello.  Honestly I've never really seen that and don't even remember who is supposed to have an advantage.  But I can look at my history:
 
+#### Reversi
 ```
 SELECT game_name, winloss, color, count(*) FROM `history` WHERE game_name like '%reversi%' group by game_name, winloss, color order by game_name, color, winloss
 ```
@@ -134,6 +135,49 @@ Frankly the numbers confuse me.  I'm looking at it this way:
   - I won 1582 games when I was white but lost 783 so I won 67% of the time.
 
 My overall winning record is good but I think when I look at the difference, there's not really a statistical difference to what color I was.
+
+#### Battleboats
+
+```
+select game_name, winloss, color, count(*) from history where game_name like '%battleboats%' group by game_name, color, winloss order by game_name, color, winloss
+```
+| Game | Win/loss | Color | Count |
+| - | - | - | - |
+| Battleboats | Loss | black | 45 |
+| Battleboats | Win | black | 57 |
+| Battleboats | Loss | white | 57 |
+| Battleboats | Win | white | 66 |
+| Battleboats Plus | Draw | black | 6 |
+| Battleboats Plus | Loss | black | 1501 |
+| Battleboats Plus | Win | black | 1986 |
+| Battleboats Plus | Draw | white | 3 |
+| Battleboats Plus | Loss | white | 1338 |
+| Battleboats Plus | Win | white | 969 |
+| Battleboats Plus Double Decoy | Draw | black | 3 |
+| Battleboats Plus Double Decoy | Loss | black | 1146 |
+| Battleboats Plus Double Decoy | Win | black | 2175 |
+| Battleboats Plus Double Decoy | Loss | white | 1615 |
+| Battleboats Plus Double Decoy | Win | white | 1215 |
+| Battleboats Plus Level 2 | Loss | black | 198 |
+| Battleboats Plus Level 2 | Win | black | 283 |
+| Battleboats Plus Level 2 | Loss | white | 261 |
+| Battleboats Plus Level 2 | Win | white | 213 |
+| Dark Battleboats Double Decoy | Loss | black | 12 |
+| Dark Battleboats Double Decoy | Win | black | 3 |
+| Dark Battleboats Double Decoy | Loss | white | 12 |
+| Dark Battleboats Double Decoy | Win | white | 3 |
+| Dark Battleboats Plus | Loss | black | 3 |
+| Dark Battleboats Plus | Win | black | 6 |
+| Dark Battleboats Plus | Loss | white | 12 |
+| Dark Battleboats Plus | Win | white | 6 |
+| Dark Battleboats Plus Level 2 | Loss | black | 12 |
+| Dark Battleboats Plus Level 2 | Loss | white | 12 |
+
+For Battleboats Plus:
+- When I played black, I won 1986 games and lost 1501, winning 57%
+- When I played white, I won 969 games and lost 1338, winning 42%
+
+Moving first is definitely an advantage in Battleboats Plus.
 
 ## Notes
 
