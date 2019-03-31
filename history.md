@@ -29,7 +29,7 @@ Bottom line, the tool is useful to me, it makes sense to me, and I will use it. 
 
 ###
 
-The script works best on a Unix system or a Unix-like environment such as [Cygwin](https://www.cygwin.com/) on Windoze.
+The script works best on a Unix system or a Unix-like environment such as [Cygwin](https://www.cygwin.com/) on Windoze.  I imagine it will work well from Mac machines since Mac OS X is a Unix OS.  It might just use a little more TLC to get working on a Windoze machine that doesn't have Python or a decent command shell.
 
 ### Credentials
 
@@ -40,7 +40,7 @@ The script must use your IYT and user and password to login to the site and coll
 
 #### Credentials in a secure store
 
-I have another script to save this information to a file in a secure manner so it's not available in the clear.  The secure store is encrypted by your private ssh key and and the actual password and userid are not echoed to the screen when you type them.
+I have another script to save this information to a file in a secure manner so it's not available in the clear.  The secure store is encrypted by your private ssh key and and the actual password and userid are not echoed to the screen when you type them.  Unless you're a very good on Unix, I suggest you don't try to put your credentials in a secure store.
 
 To set up the credentials:
 
@@ -109,3 +109,4 @@ $
 - I've been able to load a CSV into a _LibreOffice Calc_ spreadsheet (that's what my Linux machine has instead of Excel).  When the file loaded, I had to make sure that it **only** used commas as a field separator.
 - Depending on how many games you have, the script could take several seconds to run.  On my machine, it takes slightly less than a minute to collect the history for 54,916 games.  By enabling `INFO` messages, you will see the script progress through your history.
 - IYT reports dates in `mm/dd/yy` format, which is commonly used in the USA but makes sorting very problematic.  The script normalizes the dates by using `yy/mm/dd` format, even though the year looks a little funny without the century.
+- I've also written some scripts that only deal with the CSV file and those scripts can be powerful too.
