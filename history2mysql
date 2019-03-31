@@ -1,0 +1,94 @@
+#! /usr/bin/env python 
+
+import sys
+import csv
+import logging
+import requests
+import argparse
+import datetime
+
+import mysql.connector
+
+DEFAULT_DATABASE_NAME = 'iyt'
+TABLE_NAME = 'history'
+
+def dynaload(path):
+  url = "https://raw.githubusercontent.com/{path}".format(**locals())
+  log.debug('Fetching {url}'.format(**locals()))
+  req = requests.get(url)
+  if req.status_code != 200:
+    sys.stderr.write("Error loading {url}:\n".format(**locals()))
+    for name in vars(req):
+      value = getattr(req, name)
+      sys.stderr.write("  {name}: {value}\n".format(**locals()))
+    exit(1)
+  return req.text.replace('"__main__"', '"__static_main__"')
+
+parser = argparse.ArgumentParser(
+  description='ItsYourTurn history uploader to MySQL',
+  formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
+parser.add_argument('-S', '--server', dest='server', help='MySQL server', required=True)
+parser.add_argument('-d', '--database', dest='database', help='MySQL database', default=DEFAULT_DATABASE_NAME)
+parser.add_argument('-f', '--file', dest='file', help='History CSV file')
+parser.add_argument('-v', '--verbose', dest='verbose', action='count', help='Display more debugging')
+args = parser.parse_args()
+
+logging.basicConfig(format='%(asctime)s %(levelname)s %(pathname)s:%(lineno)d %(funcName)s %(msg)s')
+log = logging.getLogger('iyt')
+log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+
+if (not args.file) and sys.stdin.isatty():
+  parser.error('If file is not specified on the command line, the history CSV file must be redirected to stdin')
+
+exec(dynaload('https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py'))
+store = SecureKeyValues('mysql', ssh=True)
+
+log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+
+if args.server not in store.store:
+  parser.error('{store.filename} does not contain {args.server!r} server'.format(**locals()))
+
+if args.database not in store.store[args.server]:
+  parser.error('{store.filename} does not contain {args.server}/{args.database} '.format(**locals()))
+
+reader = csv.reader(open(args.file) if args.file else sys.stdin)
+games = [game for game in reader]
+log.info('{} games'.format(len(games)))
+
+log.info('Connecting to {user}@{args.server}'.format(
+  user=store.store[args.server][args.database]['user'],
+  **locals()
+))
+
+con = mysql.connector.connect(
+  host=args.server,
+  user=store.store[args.server][args.database]['user'],
+  passwd=store.store[args.server][args.database]['password'],
+  database=args.database,
+)
+
+# category	game_name	user_id	user_name	game_id	winloss	moves	color	end_datetime
+
+cursor = con.cursor()
+
+for game in games[1:]:
+  cursor.execute(
+    "INSERT INTO history (category, game_name, user_id, user_name, game_id, winloss, moves, color, end_datetime) " \
+    "VALUES ({category!r}, {game_name!r}, {user_id}, {user_name!r}," \
+    " {game_id}, {winloss!r}, {moves}, {color!r}, {end_datetime!r})".format(
+        category=game[0],
+        game_name=game[1],
+        user_id=game[2],
+        user_name=game[3],
+        game_id=game[4],
+        winloss=game[5],
+        moves=game[6],
+        color=game[7],
+        end_datetime=datetime.datetime.strftime(datetime.datetime.strptime(game[8] + ' ' + game[9],
+                                                                           '%m/%d/%y %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+    ))
+
+con.commit()
+
+log.info('{count} games were added'.format(count=cursor.rowcount))
