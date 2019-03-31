@@ -95,7 +95,7 @@ Sometimes I hear that a player has an advantage if they move first or second, es
 SELECT game_name, winloss, color, count(*) FROM `history` WHERE game_name like '%reversi%' group by game_name, winloss, color order by game_name, color, winloss
 ```
 | Game | Win/loss | Color | Count |
-| - | - | - | - |
+| ---- | ---- | ----- | ---- |
 | Anti-Reversi | Loss | black | 6 |
 | Anti-Reversi | Win | white | 6 |
 | Anti-Reversi (10x10) | Loss | black | 6 |
@@ -144,7 +144,7 @@ My overall winning record is good but I think when I look at the difference, the
 select game_name, winloss, color, count(*) from history where game_name like '%battleboats%' group by game_name, color, winloss order by game_name, color, winloss
 ```
 | Game | Win/loss | Color | Count |
-| - | - | - | - |
+| ---- | ---- | ----- | ---- |
 | Battleboats | Loss | black | 45 |
 | Battleboats | Win | black | 57 |
 | Battleboats | Loss | white | 57 |

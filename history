@@ -35,13 +35,13 @@ class Game(object):
     :param category: eg 'Regular'
     :param game_name: eg 'Reversi'
     :param user_name: Contents of the user column, which could contain other crap beside the user name
-    :param user_id:
-    :param game_id:
-    :param winloss:
-    :param moves:
-    :param color:
-    :param end_date:
-    :param end_time:
+    :param user_id: Your opponent's userid.  This is a number but still in a string.
+    :param game_id: The game ID.  This is a number but still in a string
+    :param winloss: 'Win', 'Loss', or 'Draw'
+    :param moves: The number of moves in the game.  This is a number uf still in a string
+    :param color: 'White', 'Black', etc
+    :param end_date: The end date in the form 'mm/dd/yy' - I don't like it but this is what ITY provides!
+    :param end_time: The end time in the form 'hh:mm:ss' - I think this is local time
     """
     (
       self.category,
@@ -81,6 +81,12 @@ class Game(object):
 
   @classmethod
   def normalize_user(cls, user):
+    """
+    Normalize an IYT user name.  This eliminates issues such as:
+      - HTML tags wrapped around the user
+      - HTML entities taking the place of some characters
+      - Characters outside the latin character set, greater than \x7f
+    """
     match = cls.bfont_regexp.search(user)
     if match:
       user = match.group(1)
@@ -90,11 +96,26 @@ class Game(object):
     return user
 
   def __str__(self):
+    """
+    Renders the game information in a string.
+
+    :return: Basically it's just a tuple of all the elements in string form.
+    """
     return str((self.category, self.game_name, self.user_name, self.user_id, self.game_id, self.winloss, self.color,
                 self.end_date, self.end_time))
 
-def get_iyt_userid(s):
-  groups = re.findall('^var d\d+="(.+)";$', s, flags=re.MULTILINE)
+def get_iyt_userid(html):
+  """
+  Extract the user's IYT userid (a number) from the game status page
+  :param html: The IYT game status page
+  :return:
+  """
+
+  """
+  Through observation, I found many of Javascript statements matching this regular expression but the last instance
+  has the IYT user
+  """
+  groups = re.findall('^var d\d+="(.+)";$', html, flags=re.MULTILINE)
   if groups:
     match = re.search('^1\^(\d+)\^', groups[-1])
     if match:
@@ -104,10 +125,27 @@ def get_iyt_userid(s):
   exit(1)
 
 def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, page=0, pages=None):
+  """
+  Extracts win/loss information from a specific game page.  The games could be continued so there could be up to
+  ten pages.  Part of the job of this method is to figure out how many pages there are.
+
+  :param session: The authenticated requests session with which we can issue requests
+  :param category: eg. 'Regular', 'Ladder', or 'Tournament'
+  :param game_name: The game name, eg. 'Reversi'
+  :param winloss: eg. 'Win', 'Loss', or 'Draw'
+  :param cols: The column tokens from a single row of an HTML table
+  :param col_pos: The index into the column tokens list we want to concentrate on. This is an integer and we are
+  *not* guaranteed that the token exists.  If it does not, we'll just return without doing anything.
+  :param page: The current page number.  This is an integer and starts as 1.  Once we know how many pages there are,
+  we'll the method with subsequent pages until we visit all of them.
+  :param pages: The total number of pages.  We don't even know how many pages there are until we look at the first page.
+  :return:
+  """
   log.info('Getting {category} {game_name} {winloss} games ({page}/{pages})'.format(**locals()))
   games = []
 
   if col_pos < len(cols):
+    # look for a URL inside an anchor tag in this cell
     href_match = href_regexp.search(cols[col_pos])
     if href_match:
       url = href_match.group(1)
@@ -115,6 +153,8 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
         url = BASE_URL + url
       if page:
         url += '&st=' + str(page*100)
+
+      # we're ready to retrieve the page
       html = session.get(url).text
 
       if not pages:
@@ -122,34 +162,48 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
         match = total_games_regexp.search(html)
         if match:
           s2 = match.group(1)
-          tokens = re.split('\|', s2)
+          tokens = page_regexp.split(s2)
           if match:
             pages = len(tokens) - 1
             log.info('{pages} pages'.format(**locals()))
 
-      matches = re.findall('^var d\d+="([^"]+)";$', html, flags=re.MULTILINE)
+      """
+      Now comes the fun of parsing out the low-level game information: win/loss, color, moves, date/time, etc.  I was
+      a little surprised it doesn't appear directly in an HTML table but instead the information seems to be encoded
+      into a long string that I expect a Javascript method will turn into a table.  I didn't even investigate what is
+      done with the string and concentrated on extracting what I needed to collect the history I wanted.
+      
+      The string has tokens separated by carets (^) and I was able to figure out most of the fields.  Here's an example
+      of one set of fields and where they are in relation to the other tokens:
+
+        0002 = {unicode} u'15300064812762'           gameid
+        0003 = {unicode} u'15200000663034'           userid
+        0004 = {unicode} u'Donna D'                  user
+        0005 = {unicode} u'Anti-Backgammon'          game
+        0006 = {unicode} u'189'                      moves
+        0007 = {unicode} u'0'                        ?
+        0008 = {unicode} u'12/16/18'                 date
+        0009 = {unicode} u'16:58:00'                 time
+        0010 = {unicode} u'0'                        ?
+        0011 = {unicode} u'white'                    color
+
+      I don't even know what tokens 7 and 10 are and I don't care.  If I start at token 2 and advance 12 tokens for each
+      set of tokens, I can parse out what I need.
+      """
+
+      matches = games_regexp.findall(html)
       data = ''.join(matches[2:])
       tokens = data.split('^')
       curr = 2
-      """
-      0002 = {unicode} u'15300064812762'           gameid
-      0003 = {unicode} u'15200000663034'           userid
-      0004 = {unicode} u'Donna D'                  user
-      0005 = {unicode} u'Anti-Backgammon'          game
-      0006 = {unicode} u'189'                      moves
-      0007 = {unicode} u'0'                        ?
-      0008 = {unicode} u'12/16/18'                 date
-      0009 = {unicode} u'16:58:00'                 time
-      0010 = {unicode} u'0'                        ?
-      0011 = {unicode} u'white'                    color
-      """
+
+      # extract all the games from this page
       while curr < len(tokens):
         games.append(Game(category, game_name, tokens[curr+2], tokens[curr+1], tokens[curr], winloss, tokens[curr+4],
                           tokens[curr+9], tokens[curr+6], tokens[curr+7]))
         log.debug('Scraped: {game}'.format(game=str(games[-1])))
         curr += 12
 
-      # log.warning('Only doing first page!')
+      # move on to the next page if there is one
       if pages and page < pages:
         games += get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, page=page+1, pages=pages)
 
@@ -163,28 +217,51 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
   return games
 
 def get_games_by_category(session, url, category):
+  """
+  This method loads the summary of games for each `category` and drives get_games_by_winloss() for each game and
+  win/loss/draw result.
+
+  :param session: The authenticated requests session with which we can issue requests
+  :param url: The URL for the game summary for this category
+  :param category: eg. 'Regular', 'Ladder', or 'Tournament'
+  :return:
+  """
   log.info('Getting {category} games'.format(**locals()))
   games = []
 
   html = session.post(url).text
-  match1 = re.search('<table>\s*<center>\s*<table', html, flags=re.IGNORECASE)
+
+  """
+  The summary page is not well-formed in terms of XHTML so I can't parse it like a good HTML page.  There are several
+  tables on the page but I can use a regular expression to find the start of the table in which I have interest.
+  """
+
+  match1 = table_start_regexp.search(html)
   if match1:
-    match2 = re.search('</table>', html[match1.start(0):], flags=re.IGNORECASE)
+    # find the end lf this table
+    match2 = table_end_regexp.search(html[match1.start(0):])
     if match2:
       table = html[match1.start(0):match1.start(0)+match2.end(0)]
+
+      # split the tables into rows
       rows = tr_regexp.split(table)
       for row in rows[2:-1]:
+        # split the row in to columns (cells)
         cols = td_regexp.split(row)
         log.debug('row: {row!r}, cols: {cols}'.format(**locals()))
+
+        # extract the game name
         game_name_match = bold_regexp.search(cols[0])
         game_name = game_name_match.group(1) if game_name_match else None
+
         log.debug('Parsed {col!r} with {pat} => {game_name}'.format(
           col=cols[0],
           pat=bold_regexp.pattern,
           **locals()
         ))
+
         if game_name:
-          # log.debug((game_name, tuple(enumerate(cols))))
+          # process games for each result (win, loss, draw)
           games += get_games_by_winloss(session, category, game_name, 'Win', cols, 1)
           games += get_games_by_winloss(session, category, game_name, 'Loss', cols, 2)
           games += get_games_by_winloss(session, category, game_name, 'Draw', cols, 3)
@@ -194,6 +271,13 @@ def get_games_by_category(session, url, category):
   return games
 
 def dynaload(path):
+  """
+  This method dynamically loads a method from my public git repo so it doesn't need to be available on the
+  local system
+
+  :param path: URL to the file with the method - this should be the raw link to the file on github
+  :return: Raw contents to the page.  The caller will do an exec() in the string to define the method
+  """
   url = "https://raw.githubusercontent.com/{path}".format(**locals())
   log.debug('Fetching {url}'.format(**locals()))
   req = requests.get(url)
@@ -207,11 +291,32 @@ def dynaload(path):
 
 BASE_URL = 'https://itsyourturn.com'
 
+# this regular expression finds the table of that contains a summary of types of games
+table_start_regexp = re.compile('<table>\s*<center>\s*<table', flags=re.IGNORECASE)
+
+# this regular expression finds the end of the table found by `table_start_regexp`
+table_end_regexp = re.compile('</table>', flags=re.IGNORECASE)
+
+# this regular expression is used to break up rows of an HTML table
 tr_regexp = re.compile('</tr>', flags=re.IGNORECASE)
+
+# this regular expression is used to break up columns (cells) of an HTML table row
 td_regexp = re.compile('</td>', flags=re.IGNORECASE)
+
+# this regular expression extracts a table name inside BOLD tags
 bold_regexp = re.compile('<b>([^<]+)</b>', flags=re.IGNORECASE)
+
+# this regular expression is used to extract a URL from an HTML anchor tag
 href_regexp = re.compile('href="([^"]+)"', flags=re.IGNORECASE)
+
+# this regular expression finds a line on a game result page from which we can figure out how many pages there are
 total_games_regexp = re.compile('Total Game Count: (.+)$', re.MULTILINE)
+
+# this regular expression breaks up the list of pages so we can count how many pages there are
+page_regexp = re.compile('\|')
+
+# this regular expression finds lines that hold encoded game information
+games_regexp = re.compile('^var d\d+="([^"]+)";$', flags=re.MULTILINE)
 
 parser = argparse.ArgumentParser(description='ItsYourTurn history collector')
 
@@ -224,6 +329,7 @@ group.add_argument('-j', '--json', dest='json', action='store_true', help='Rende
 parser.add_argument('-v', '--verbose', dest='verbose', action='count', help='Display more debugging')
 args = parser.parse_args()
 
+# default to CSV if neither JSON nor CSV is specified
 if not (args.json or args.csv):
   args.csv = True
 
@@ -254,6 +360,7 @@ payload = {
 session = requests.Session()
 # session.auth = (user, password) - not used - payload is used instead
 
+# login to IYT
 result = session.post(
   BASE_URL + '/iyt.dll/loginverify',
   data=payload,
