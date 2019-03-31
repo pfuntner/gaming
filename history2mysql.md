@@ -190,13 +190,14 @@ Moving first is definitely an advantage in Battleboats Plus.
     CREATE TABLE history (
         category varchar(16) NOT NULL,
         game_name varchar(32) NOT NULL,
-        user_id int(11) NOT NULL,
+        user_id bigint(11) NOT NULL,
         user_name varchar(64) NOT NULL,
-        game_id int(11) NOT NULL,
+        game_id bigint(11) NOT NULL,
         winloss varchar(8) NOT NULL,
         moves int(11) NOT NULL,
         color varchar(16) NOT NULL,
         end_datetime datetime NOT NULL
     ); 
     ```
+    
  - I've used the script to upload 55,000 games and it only takes about 2 seconds to do the update.  A single SQL `INSERT` is formed and my statement was about 6.5MB.
