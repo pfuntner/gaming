@@ -52,9 +52,11 @@ if args.server not in store.store:
 if args.database not in store.store[args.server]:
   parser.error('{store.filename} does not contain {args.server}/{args.database} '.format(**locals()))
 
+log.debug('Obtained secure key/values')
+
 reader = csv.reader(open(args.file) if args.file else sys.stdin)
 games = [game for game in reader]
-log.info('{} games'.format(len(games)))
+log.info('Loaded {} games'.format(len(games)))
 
 log.info('Connecting to {user}@{args.server}'.format(
   user=store.store[args.server][args.database]['user'],
@@ -68,27 +70,36 @@ con = mysql.connector.connect(
   database=args.database,
 )
 
+log.debug('Connected to mysql')
+
 # category	game_name	user_id	user_name	game_id	winloss	moves	color	end_datetime
 
 cursor = con.cursor()
 
-for game in games[1:]:
-  cursor.execute(
-    "INSERT INTO history (category, game_name, user_id, user_name, game_id, winloss, moves, color, end_datetime) " \
-    "VALUES ({category!r}, {game_name!r}, {user_id}, {user_name!r}," \
-    " {game_id}, {winloss!r}, {moves}, {color!r}, {end_datetime!r})".format(
-        category=game[0],
-        game_name=game[1],
-        user_id=game[2],
-        user_name=game[3],
-        game_id=game[4],
-        winloss=game[5],
-        moves=game[6],
-        color=game[7],
-        end_datetime=datetime.datetime.strftime(datetime.datetime.strptime(game[8] + ' ' + game[9],
-                                                                           '%m/%d/%y %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
-    ))
+values = ', '.join([
+  '({category!r}, {game_name!r}, {user_id}, {user_name!r}, {game_id}, {winloss!r}, {moves}, {color!r}, '
+  '{end_datetime!r})'.format(
+    category=game[0],
+    game_name=game[1],
+    user_id=game[2],
+    user_name=game[3],
+    game_id=game[4],
+    winloss=game[5],
+    moves=game[6],
+    color=game[7],
+    end_datetime=datetime.datetime.strftime(datetime.datetime.strptime(game[8] + ' ' + game[9],
+                                                                       '%m/%d/%y %H:%M:%S'), '%Y-%m-%d %H:%M:%S'))
+  for game in games[1:]
+])
+
+log.debug('Executing insert')
+
+cursor.execute(
+  'INSERT INTO history (category, game_name, user_id, user_name, game_id, winloss, moves, color, end_datetime) ' \
+  'VALUES ' + values)
+
+log.debug('Executed insert')
 
 con.commit()
 
-log.info('{count} games were added'.format(count=cursor.rowcount))
+log.info('Changes committed, {count} games were added'.format(count=cursor.rowcount))
