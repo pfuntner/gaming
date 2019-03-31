@@ -15,17 +15,26 @@ The script works best on a Unix system or a Unix-like environment such as [Cygwi
 
 ### Credentials
 
-MySQL credentials are stored in a secure store called `iyt` and are managed by my `SecureKeyValues.py` tool (see the `Credentials` section of [`history`](history.md) for more information).  The following steps assumes that you've already downloaded the `SecureKeyValues.py`.
+The script needs the userid and password to the MySQL database you're using.  You have two choices:
 
+1. Save the information in a _secure store_ just like `history`.
 
+   - Secure store name: `mysql`
+   - Userid key: _`{SERVER_NAME}`_/_`{DATABASE_NAME}`_/`user`
+   - Password key: _`{SERVER_NAME}`_/_`{DATABASE_NAME}`_/`password`
+
+   See that script for tips on setting up the secure store for `history2mysql`
+   
+ 2. Let the script prompt for the MySQL userid and password
 
 ### Options
 
 | Option | Description | Default |
 | ------ | ----------- | ------- |
 | `-S` or `--server` | MySQL server | The option is required and there is no default |
-| `-u` or `--user` | MySQL user | The option is required and there is no default |
+| `-u` or `--user` | MySQL user, necessary if you don't set up the secure store | There is no default but if you specify `--user`, the secure store will be ignored |
 | `-d` or `--database` | MySQL database | The default is `iyt`. |
+| `-f` or `--file` | Option to provide IYT history file.  Alternatively, you can redirect the file to stdin | There is no default but you have to use one of the methods.  If you **do** specify `--file`, the script ignores stdin |
 | `-v` or `--version` | Enables more debugging.  One instance of the option enable `INFO` messages.  Two instances enable `DEBUG` messages.  | The default is to display `WARNING`, `ERROR`, and `CRITICAL` messages |
 
 ## Examples
