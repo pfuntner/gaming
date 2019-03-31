@@ -68,18 +68,18 @@ To set up the credentials:
 $ ./history | headtail
 There are 54,916 total games
        1 Category,Game,GameID,User,UserID,WinLoss,Moves,Color,Date,Time
-       2 Regular,Anti-Backgammon,15300064812762,Donna D,15200000663034,Win,189,white,12/16/18,16:58:00
-       3 Regular,Anti-Backgammon,15300065319531,Danny Bad Boy,15200000782400,Win,31,black,08/28/18,08:53:00
-       4 Regular,Anti-Backgammon,15300064893256,supermanwuvsme,15200003044703,Win,290,black,07/05/18,22:28:00
-       5 Regular,Anti-Backgammon,15300064965692,pandagirl,15200003408150,Win,11,white,05/20/18,17:58:00
+       2 Regular,Anti-Backgammon,15300064812762,Donna D,15200000663034,Win,189,white,18/12/16,16:58:00
+       3 Regular,Anti-Backgammon,15300065319531,Danny Bad Boy,15200000782400,Win,31,black,18/08/28,08:53:00
+       4 Regular,Anti-Backgammon,15300064893256,supermanwuvsme,15200003044703,Win,290,black,18/07/05,22:28:00
+       5 Regular,Anti-Backgammon,15300064965692,pandagirl,15200003408150,Win,11,white,18/05/20,17:58:00
          .
          .
          .
-   54913 Ladder,Triple Boatzee,15300058626606,Grand Poobah,15200003015255,Draw,40,black,08/08/14,17:59:00
-   54914 Ladder,Triple Boatzee,15300055564644,Gingy,15200000357493,Draw,40,black,03/16/13,08:03:00
-   54915 Ladder,Triple Boatzee,15300062382383,Henning,15200003362723,Draw,40,white,09/21/16,15:50:00
-   54916 Ladder,Triple Boatzee,15300058626606,Grand Poobah,15200003015255,Draw,40,black,08/08/14,17:59:00
-   54917 Ladder,Triple Boatzee,15300055564644,Gingy,15200000357493,Draw,40,black,03/16/13,08:03:00
+   54913 Ladder,Triple Boatzee,15300058626606,Grand Poobah,15200003015255,Draw,40,black,14/08/08,17:59:00
+   54914 Ladder,Triple Boatzee,15300055564644,Gingy,15200000357493,Draw,40,black,13/03/16,08:03:00
+   54915 Ladder,Triple Boatzee,15300062382383,Henning,15200003362723,Draw,40,white,16/09/21,15:50:00
+   54916 Ladder,Triple Boatzee,15300058626606,Grand Poobah,15200003015255,Draw,40,black,14/08/08,17:59:00
+   54917 Ladder,Triple Boatzee,15300055564644,Gingy,15200000357493,Draw,40,black,13/03/16,08:03:00
 $ ./history --json | json | headtail
 There are 54,916 total games
        1 [
