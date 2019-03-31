@@ -52,6 +52,39 @@ $ ./history2mysql -vv -S mrbruno.org -d mrbrunoo_iyt -f /home/mrbruno/tmp/iyt-hi
 $
 ```
 
+## Applications
+Once the history is in the database, there are a lot of things you can do with it.
+
+### Who have I played _the most often_?
+```
+> select user_name, count(*) from history group by user_name order BY count(*) DESC
+ 1 sht10                             349
+ 2 ~~Princess~~                      325
+ 3 Steve in NY                       303
+ 4 Hedonist - Alain                  269
+ 5 Nucifer                           249
+ 6 Don                               241
+ 7 joanie                            230
+ 8 mike                              228
+ 9 Trina                             227
+10 Gregory                           206
+11 Dave                              191
+12 ...CASINO DEALER...               186
+13 Joshua                            172
+14 carouselhorse                     169
+15 moose 3:O)                        165
+16 codeslave                         163
+17 Melissa                           161
+18 Kerry                             158
+19 Maid Marian                       156
+20 Rebecca                           154
+21 urantian                          146
+22 Andy                              144
+23 LIL RHODI GAL                     142
+24 Paul                              136
+25 Karen                             133
+```
+
 ## Notes
 
 - The script requires the `mysql-connector` Python package to interface with MySQL
