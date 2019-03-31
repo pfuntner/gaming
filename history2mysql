@@ -72,9 +72,15 @@ con = mysql.connector.connect(
 
 log.debug('Connected to mysql')
 
-# category	game_name	user_id	user_name	game_id	winloss	moves	color	end_datetime
-
 cursor = con.cursor()
+
+log.debug('Truncating table')
+
+cursor.execute('TRUNCATE TABLE history')
+
+log.debug('Executing insert')
+
+# build a big-ass long VALUES clause that covers all of the games
 
 values = ', '.join([
   '({category!r}, {game_name!r}, {user_id}, {user_name!r}, {game_id}, {winloss!r}, {moves}, {color!r}, '
@@ -92,7 +98,7 @@ values = ', '.join([
   for game in games[1:]
 ])
 
-log.debug('Executing insert')
+log.debug('`values` is {bytes:,} bytes long'.format(bytes=len(values)))
 
 cursor.execute(
   'INSERT INTO history (category, game_name, user_id, user_name, game_id, winloss, moves, color, end_datetime) ' \
@@ -102,4 +108,4 @@ log.debug('Executed insert')
 
 con.commit()
 
-log.info('Changes committed, {count} games were added'.format(count=cursor.rowcount))
+log.info('Changes committed, {count:,} games were added'.format(count=cursor.rowcount))

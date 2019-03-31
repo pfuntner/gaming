@@ -45,6 +45,7 @@ $
 
 ## Notes
 
+- The script requires the `mysql-connector` Python package to interface with MySQL
 - The script assumes a table called `history` created with a schema such as:
 
     ```
@@ -60,3 +61,4 @@ $
         end_datetime datetime NOT NULL
     ); 
     ```
+ - I've used the script to upload 55,000 games and it only takes about 2 seconds to do the update.  A single SQL `INSERT` is formed and my statement was about 6.5MB.
