@@ -89,7 +89,7 @@ Once the history is in the database, there are a lot of things you can do with i
 Sometimes I hear that a player has an advantage if they move first or second, especially with reversi/othello.  Honestly I've never really seen that and don't even remember who is supposed to have an advantage.  But I can look at my history:
 
 ```
-SELECT game_name, winloss, color, count(*) FROM `history` WHERE game_name like '%reversi%' group by game_name, winloss, color
+SELECT game_name, winloss, color, count(*) FROM `history` WHERE game_name like '%reversi%' group by game_name, winloss, color order by game_name, color, winloss
 ```
 | Game | Win/loss | Color | Count |
 | - | - | - | - |
@@ -98,33 +98,42 @@ SELECT game_name, winloss, color, count(*) FROM `history` WHERE game_name like '
 | Anti-Reversi (10x10) | Loss | black | 6 |
 | Anti-Reversi (10x10) | Win | black | 6 |
 | Reversi | Draw | black | 168 |
-| Reversi | Draw | white | 213 |
 | Reversi | Loss | black | 1439 |
-| Reversi | Loss | white | 1485 |
 | Reversi | Win | black | 1796 |
+| Reversi | Draw | white | 213 |
+| Reversi | Loss | white | 1485 |
 | Reversi | Win | white | 1753 |
 | Reversi 10x10 | Draw | black | 45 |
-| Reversi 10x10 | Draw | white | 42 |
 | Reversi 10x10 | Loss | black | 1016 |
-| Reversi 10x10 | Loss | white | 783 |
 | Reversi 10x10 | Win | black | 1954 |
+| Reversi 10x10 | Draw | white | 42 |
+| Reversi 10x10 | Loss | white | 783 |
 | Reversi 10x10 | Win | white | 1582 |
 | Reversi 6x6 | Loss | black | 18 |
-| Reversi 6x6 | Loss | white | 21 |
 | Reversi 6x6 | Win | black | 21 |
+| Reversi 6x6 | Loss | white | 21 |
 | Reversi 6x6 | Win | white | 15 |
-| Reversi Blackhole | Draw | white | 9 |
 | Reversi Blackhole | Loss | black | 804 |
-| Reversi Blackhole | Loss | white | 770 |
 | Reversi Blackhole | Win | black | 1494 |
+| Reversi Blackhole | Draw | white | 9 |
+| Reversi Blackhole | Loss | white | 770 |
 | Reversi Blackhole | Win | white | 1322 |
-| Reversi Blackhole (10x10) | Draw | white | 6 |
 | Reversi Blackhole (10x10) | Loss | black | 588 |
-| Reversi Blackhole (10x10) | Loss | white | 352 |
 | Reversi Blackhole (10x10) | Win | black | 1388 |
+| Reversi Blackhole (10x10) | Draw | white | 6 |
+| Reversi Blackhole (10x10) | Loss | white | 352 |
 | Reversi Blackhole (10x10) | Win | white | 969 |
 
-I've won much more often when I played black.  Shockingly, I don't even remember which color moves first!  That's what IYT is for!  FWIW, black moves first so it seems like I have an advantage when I move first.
+Frankly the numbers confuse me.  I'm looking at it this way:
+
+- For regular Reversi:
+  - I won 1796 games when I was black but lost 1439 so I won 55% of the time.
+  - I won 1753 games when I was white but lost 1485 so I won 54% of the time.
+- For Reversi 10x10:
+  - I won 1954 games when I was black but lost 1016 so I won 66% of the time.
+  - I won 1582 games when I was white but lost 783 so I won 67% of the time.
+
+My overall winning record is good but I think when I look at the difference, there's not really a statistical difference to what color I was.
 
 ## Notes
 
