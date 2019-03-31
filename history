@@ -13,7 +13,9 @@ class Game(object):
   This object encapsulates the information about a particular IYT game
   """
 
-  # `bfont_regexp` is used to extract the user name from a set of tags that sometimes surrounds it
+  """
+  `bfont_regexp` is used to extract the user name from a set of tags that indicates that the player is a paying IYT user
+  """
   bfont_regexp = re.compile('<b><font[^>]*>.*</font>(.+)</b>', flags=re.IGNORECASE)
 
   # `date_regexp` is used to normalize the date
