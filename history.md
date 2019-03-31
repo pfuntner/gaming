@@ -33,7 +33,14 @@ The script works best on a Unix system or a Unix-like environment such as [Cygwi
 
 ### Credentials
 
-The script must use your IYT and user and password to login to the site and collect information.  I have another script to save this information to a file in a secure manner so it's not available in the clear.  The secure store is encrypted by your private ssh key and and the actual password and userid are not echoed to the screen when you type them.
+The script must use your IYT and user and password to login to the site and collect information.  There are two choices:
+
+1. You can have the script prompt you for the inforamtion each time you run it.
+2. You can set up the userid and password in a _secure store_ so that you don't have to be prompted every time.
+
+#### Credentials in a secure store
+
+I have another script to save this information to a file in a secure manner so it's not available in the clear.  The secure store is encrypted by your private ssh key and and the actual password and userid are not echoed to the screen when you type them.
 
 To set up the credentials:
 
@@ -44,12 +51,13 @@ To set up the credentials:
 | 3 | Enter the key names of the values you will enter next | `user`<br/>`password` |
 | 4 | Signal the end of names of values | Press `Ctrl-D` |
 | 5 | Respond to the prompt of entering the user | Type your IYT user - remember, it is not echoed to the screen |
-| 6 | Respond to the prmopt of entering the password | Type your IYT password - again, it is not echoed to the screen |
+| 6 | Respond to the prompt of entering the password | Type your IYT password - again, it is not echoed to the screen |
 
 ### Options
 
 | Option | Description | Default |
 | ------ | ----------- | ------- |
+| `-u` or `--user` | Specifies your IYT user if it's not in the secured store | There is no default |
 | `-c` or `--csv` | Renders history in [CSV (_comma separated values_) format](https://www.wikiwand.com/en/Comma-separated_values) | The default is to use this method |
 | `-j` or `--json` | Renders history in [JSON format](https://www.wikiwand.com/en/JSON) | The default is to render in CSV format |
 | `-v` or `--version` | Enables more debugging.  One instance of the option enable `INFO` messages.  Two instances enable `DEBUG` messages.  | The default is to display `WARNING`, `ERROR`, and `CRITICAL` messages |
