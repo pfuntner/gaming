@@ -52,6 +52,8 @@ $ ./history2mysql -vv -S mrbruno.org -d mrbrunoo_iyt -f /home/mrbruno/tmp/iyt-hi
 $
 ```
 
+Note: I'm using the MySQL server that my web hosting company provides and they prefixe MySQL users and databases with the host company user (`mrbrunoo` for `mrbruno.org` in my case) so that's why I had to override the database name.  Otherwise, I probably would have just used the default name `iyt`.
+
 ## Applications
 Once the history is in the database, there are a lot of things you can do with it.
 
