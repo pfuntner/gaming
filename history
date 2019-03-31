@@ -4,6 +4,7 @@ import sys
 import csv
 import json
 import logging
+import getpass
 import requests
 import argparse
 
@@ -54,7 +55,7 @@ class Game(object):
     return str((self.category, self.game_name, self.user_name, self.user_id, self.game_id, self.winloss, self.color,
                 self.end_date, self.end_time))
 
-def get_userid(s):
+def get_iyt_userid(s):
   groups = re.findall('^var d\d+="(.+)";$', s, flags=re.MULTILINE)
   if groups:
     match = re.search('^1\^(\d+)\^', groups[-1])
@@ -176,6 +177,8 @@ total_games_regexp = re.compile('Total Game Count: (.+)$', re.MULTILINE)
 
 parser = argparse.ArgumentParser(description='ItsYourTurn history collector')
 
+parser.add_argument('-u', '--user', dest='user', help='Your IYT userid')
+
 group = parser.add_mutually_exclusive_group()
 group.add_argument('-c', '--csv', dest='csv', action='store_true', help='Render games in CSV form')
 group.add_argument('-j', '--json', dest='json', action='store_true', help='Render games in JSON form')
@@ -190,18 +193,28 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(pathname)s:%(lineno)d %(
 log = logging.getLogger('iyt')
 log.setLevel(logging.WARNING - 10*(args.verbose or 0))
 
-exec(dynaload('https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py'))
-store = SecureKeyValues('iyt', ssh=True)
+(user, password) = (None, None)
+if args.user:
+  user = args.user
+  password = getpass.getpass('Enter your IYT password for {user!r}: ')
+else:
+  exec(dynaload('https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py'))
+  store = SecureKeyValues('iyt', ssh=True)
+  user = store.store.get('user')
+  password = store.store.get('password')
 
-log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+  log.setLevel(logging.WARNING - 10*(args.verbose or 0))
+
+if (not user) or (not password):
+  parser.error('Either set up credentials in a secure store or specify --user')
 
 payload = {
-  'login': store.store['user'], 
-  'passwd': store.store['password'], 
+  'login': user,
+  'passwd': password,
 }
 
 session = requests.Session()
-session.auth = (store.store['user'], store.store['password'])
+# session.auth = (user, password) - not used - payload is used instead
 
 result = session.post(
   BASE_URL + '/iyt.dll/loginverify',
@@ -209,7 +222,7 @@ result = session.post(
   headers=dict(referer=BASE_URL),
 )
 
-iyt_userid = get_userid(session.get(BASE_URL).text)
+iyt_userid = get_iyt_userid(session.get(BASE_URL).text)
 log.info('Logged in with {iyt_userid}'.format(**locals()))
 
 games = get_games_by_category(session, 'http://www.itsyourturn.com/iyt.dll?userprofile?userid={iyt_userid}&proftype=0'.format(**locals()), 'Regular')

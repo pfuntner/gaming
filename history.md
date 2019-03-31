@@ -57,7 +57,7 @@ To set up the credentials:
 
 | Option | Description | Default |
 | ------ | ----------- | ------- |
-| `-u` or `--user` | Specifies your IYT user if it's not in the secured store | There is no default |
+| `-u` or `--user` | Specifies your IYT user if the script should not look in the secured store.  The script will prompt for the password but will not echo what you write to the screen. | There is no default |
 | `-c` or `--csv` | Renders history in [CSV (_comma separated values_) format](https://www.wikiwand.com/en/Comma-separated_values) | The default is to use this method |
 | `-j` or `--json` | Renders history in [JSON format](https://www.wikiwand.com/en/JSON) | The default is to render in CSV format |
 | `-v` or `--version` | Enables more debugging.  One instance of the option enable `INFO` messages.  Two instances enable `DEBUG` messages.  | The default is to display `WARNING`, `ERROR`, and `CRITICAL` messages |

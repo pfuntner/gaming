@@ -32,7 +32,7 @@ The script needs the userid and password to the MySQL database you're using.  Yo
 | Option | Description | Default |
 | ------ | ----------- | ------- |
 | `-S` or `--server` | MySQL server | The option is required and there is no default |
-| `-u` or `--user` | MySQL user, necessary if you don't set up the secure store | There is no default but if you specify `--user`, the secure store will be ignored |
+| `-u` or `--user` | MySQL user if the script should not look in the secure store.  The script will prompt for the password but will not echo what you write to the screen. | There is no default but if you specify `--user`, the secure store will be ignored |
 | `-d` or `--database` | MySQL database | The default is `iyt`. |
 | `-f` or `--file` | Option to provide IYT history file.  Alternatively, you can redirect the file to stdin | There is no default but you have to use one of the methods.  If you **do** specify `--file`, the script ignores stdin |
 | `-v` or `--version` | Enables more debugging.  One instance of the option enable `INFO` messages.  Two instances enable `DEBUG` messages.  | The default is to display `WARNING`, `ERROR`, and `CRITICAL` messages |
