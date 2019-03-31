@@ -1,4 +1,4 @@
-# `history`
+# `history2mysql`
 
 Imports IYT game history into a MySQL database
 
