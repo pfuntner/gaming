@@ -6,6 +6,7 @@ A simple script that just uses the history CSV file and show highest/lowest winn
 
 import sys
 import csv
+import subprocess
 
 class Player(object):
   def __init__(self, name):
@@ -29,10 +30,13 @@ class Player(object):
     self.pcent = (self.wins*100.0) / self.total
 
 def display(reverse):
-  writer = csv.writer(sys.stdout)
+  p = subprocess.Popen('table --csv --bbcode --headings'.split(), stdin=subprocess.PIPE)
+  writer = csv.writer(p.stdin)
   writer.writerow(('Name', 'Wins', 'Losses', 'Draws', 'Winning percentage'))
   for player in sorted(players, reverse=reverse, key=lambda player: player.pcent)[:50]:
     writer.writerow((player.name, player.wins, player.losses, player.draws, '{:.2f}%'.format(player.pcent)))
+  p.stdin.close()
+  p.wait()
 
 assert not sys.stdin.isatty(), 'stdin must be redirected'
 
