@@ -1,0 +1,43 @@
+#! /usr/bin/env python
+
+"""
+A simple script that just uses the history CSV file and generates a table of players and wins/losses/draws
+"""
+
+import sys
+import csv
+
+class Player(object):
+  def __init__(self, name):
+    self.name = name
+    self.wins = 0
+    self.losses = 0
+    self.draws = 0 
+
+def inc(player, winloss):
+  if winloss == 'Win':
+     winloss = 'wins'
+  elif winloss == 'Loss':
+     winloss = 'losses'
+  else:
+     winloss = 'draws'
+  setattr(player, winloss, getattr(player, winloss)+1)
+
+assert not sys.stdin.isatty(), 'stdin must be redirected'
+
+players = {}
+reader = csv.reader(sys.stdin)
+for row in list(reader)[1:]:
+  # Category,Game,GameID,User,UserID,WinLoss,Moves,Color,Date,Time
+  name = row[3]
+  winloss = row[5]
+  if name not in players:
+    players[name] = Player(name)
+  inc(players[name], winloss)
+
+players = sorted([player for player in players.values()], reverse=True, key=lambda player: player.wins + player.losses + player.draws)
+
+writer = csv.writer(sys.stdout)
+writer.writerow(('Name', 'Wins', 'Losses', 'Draws'))
+for player in players:
+  writer.writerow((player.name, player.wins, player.losses, player.draws))
