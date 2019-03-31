@@ -60,6 +60,7 @@ Once the history is in the database, there are a lot of things you can do with i
 ## Notes
 
 - The script requires the `mysql-connector` Python package to interface with MySQL
+- A sort of companion to this script is [`pmysql`](https://github.com/pfuntner/toys/blob/master/bin/pmysql) - there's no help page for it... yet!  I plan to put some examples in the [IYT SQL queries message board](http://itsyourturn.freeforums.net/board/4/sql-queries)
 - The script assumes a table called `history` created with a schema such as:
 
     ```
