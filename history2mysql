@@ -105,7 +105,7 @@ values = ', '.join([
     moves=game[6],
     color=game[7],
     end_datetime=datetime.datetime.strftime(datetime.datetime.strptime(game[8] + ' ' + game[9],
-                                                                       '%m/%d/%y %H:%M:%S'), '%Y-%m-%d %H:%M:%S'))
+                                                                       '%y/%m/%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S'))
   for game in games[1:]
 ])
 

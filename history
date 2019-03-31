@@ -9,7 +9,17 @@ import requests
 import argparse
 
 class Game(object):
+  """
+  This object encapsulates the information about a particular IYT game
+  """
+
+  # `bfont_regexp` is used to extract the user name from a set of tags that sometimes surrounds it
   bfont_regexp = re.compile('<b><font[^>]*>.*</font>(.+)</b>', flags=re.IGNORECASE)
+
+  # `date_regexp` is used to normalize the date
+  date_regexp = re.compile('^(\d{2}/\d{2})/(\d{2})$')
+
+  # `replacements` contains HTML entities in a user name to replace with specific characters
   replacements = {
     '&amp;': '&',
     '&gt;': '>',
@@ -18,6 +28,21 @@ class Game(object):
   }
 
   def __init__(self, category, game_name, user_name, user_id, game_id, winloss, moves, color, end_date, end_time):
+    """
+    This is the constructor.  The parameters are kind of self-explanatory and all arrive as strings.  Most of the
+    strings need little or no processing.
+
+    :param category: eg 'Regular'
+    :param game_name: eg 'Reversi'
+    :param user_name: Contents of the user column, which could contain other crap beside the user name
+    :param user_id:
+    :param game_id:
+    :param winloss:
+    :param moves:
+    :param color:
+    :param end_date:
+    :param end_time:
+    """
     (
       self.category,
       self.game_name,
@@ -37,9 +62,22 @@ class Game(object):
         winloss,
         moves,
         color,
-        end_date,
+        self.normalize_date(end_date),
         end_time
       )
+
+  @classmethod
+  def normalize_date(cls, date):
+    """
+    Normalize the date which comes in as 'MM/DD/YY' to 'YY/MM/DD' which can be sorted much easier
+
+    :param date: A string in the form of 'MM/DD/YY'
+    :return:  A string in the form 'YY/MM/DD'
+    """
+    match = cls.date_regexp.search(date)
+    if match:
+      date = '{year}/{month_day}'.format(year=match.group(2), month_day=match.group(1))
+    return date
 
   @classmethod
   def normalize_user(cls, user):
