@@ -1,0 +1,53 @@
+#! /usr/bin/env python
+
+"""
+A simple script that just uses the history CSV file and show highest/lowest winning percentages when I've played at least 100 games against a player
+"""
+
+import sys
+import csv
+
+class Player(object):
+  def __init__(self, name):
+    self.name = name
+    self.wins = 0
+    self.losses = 0
+    self.draws = 0 
+    self.total = 0
+    self.pcent = 0.0 
+
+  def inc(self, winloss):
+    if winloss == 'Win':
+      self.wins += 1
+    elif winloss == 'Loss':
+      self.losses += 1
+    else:
+      self.draws += 1
+
+    self.total = self.wins + self.losses + self.draws
+
+    self.pcent = (self.wins*100.0) / self.total
+
+def display(reverse):
+  writer = csv.writer(sys.stdout)
+  writer.writerow(('Name', 'Wins', 'Losses', 'Draws', 'Winning percentage'))
+  for player in sorted(players, reverse=reverse, key=lambda player: player.pcent)[:50]:
+    writer.writerow((player.name, player.wins, player.losses, player.draws, '{:.2f}%'.format(player.pcent)))
+
+assert not sys.stdin.isatty(), 'stdin must be redirected'
+
+players = {}
+reader = csv.reader(sys.stdin)
+for row in list(reader)[1:]:
+  # Category,Game,GameID,User,UserID,WinLoss,Moves,Color,Date,Time
+  name = row[3]
+  winloss = row[5]
+  if name not in players:
+    players[name] = Player(name)
+  players[name].inc(winloss)
+
+players = [player for player in players.values() if player.total >= 100]
+
+display(False)
+print ''
+display(True)
