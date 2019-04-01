@@ -31,7 +31,9 @@ Bottom line, the tool is useful to me, it makes sense to me, and I will use it. 
 
 The script works best on a Unix system or a Unix-like environment such as [Cygwin](https://www.cygwin.com/) on Windoze.  I imagine it will work well from Mac machines since Mac OS X is a Unix OS.  It might just use a little more TLC to get working on a Windoze machine that doesn't have Python or a decent command shell.
 
-### Python 2.7+ (pre-Python 3)
+### Python Requirements
+
+#### Python 2.7+ (pre-Python 3)
 
 I know the script requires at least Python 2.7:
 
@@ -42,6 +44,14 @@ $
 ```
 
 It will not work with Python 3 but I could probably make it work with Python 3.  I usually don't have a need to use Python 3.
+
+#### requests package
+
+The script uses the `requests` package which does not come with Python by default.  If it's not available, you might have to install it:
+
+```
+$ pip install requests
+```
 
 ### Credentials
 
@@ -58,7 +68,7 @@ To set up the credentials:
 
 | Step number | Description | Command |
 | - | - | - |
-| 1 | Download the script.  This is part of my [toys repo](https://github.com/pfuntner/toys) but all you need is one script | `$ wget https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py > SecureKeyValues.py`<br/>`$ chmod +x SecureKeyValues.py` |
+| 1 | Download the script.  This is part of my [toys repo](https://github.com/pfuntner/toys) but all you need is one script | `$ wget https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py`<br/>`$ chmod +x SecureKeyValues.py` |
 | 2 | Start the script to create a secure store | `$ ./SecureKeyValues.py --ssh --store iyt --operation set` |
 | 3 | Enter the key names of the values you will enter next | `user`<br/>`password` |
 | 4 | Signal the end of names of values | Press `Ctrl-D` |

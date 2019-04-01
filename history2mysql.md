@@ -25,7 +25,7 @@ The script needs the userid and password to the MySQL database you're using.  Yo
 
    See that script for tips on setting up the secure store for `history2mysql`
    
- 2. Let the script prompt for the MySQL userid and password
+ 2. Specify the userid via the `--user` option on the command line and let the script prompt for the password
 
 ### Options
 
