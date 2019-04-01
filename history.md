@@ -7,7 +7,9 @@ The script:
   2. Opens the game status page to learn the user's IYT user id
   3. Opens the user's _user profile_
   4. For Regular, Tournament, and Ladder games:
+  
     1. For the wins, losses, and draws for each game:
+    
       1. Opens all summary pages and collects information about each game: opponent, win/loss, etc.
 
 ## Isn't this already available?
@@ -38,7 +40,7 @@ The script must use your IYT and user and password to login to the site and coll
 1. You can have the script prompt you for the inforamtion each time you run it.
 2. You can set up the userid and password in a _secure store_ so that you don't have to be prompted every time.
 
-#### Credentials in a secure store
+#### Credentials in a secure store 
 
 I have another script to save this information to a file in a secure manner so it's not available in the clear.  The secure store is encrypted by your private ssh key and and the actual password and userid are not echoed to the screen when you type them.  Unless you're a very good on Unix, I suggest you don't try to put your credentials in a secure store.
 
@@ -103,7 +105,7 @@ $
 ## Notes
 
 - The script only collects the overall infomation of a game.  It does not collect information about individual moves.
-- The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,171 games at the time of writing this page but only 54,916 are avaiable in the history pages.
+- The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,171 games at the time of writing this page but only 54,916 are available in the history pages.
 - You will probably want to redirect stdout to a file that will store your history.
 - See [`history2mysql`](history2mysql.md) for a script to load a CSV into MySQL.
 - I've been able to load a CSV into a _LibreOffice Calc_ spreadsheet (that's what my Linux machine has instead of Excel).  When the file loaded, I had to make sure that it **only** used commas as a field separator.
