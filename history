@@ -342,7 +342,7 @@ log.setLevel(logging.WARNING - 10*(args.verbose or 0))
 (user, password) = (None, None)
 if args.user:
   user = args.user
-  password = getpass.getpass('Enter your IYT password for {user!r}: ')
+  password = getpass.getpass('Enter your IYT password for {user!r}: '.format(**locals()))
 else:
   exec(dynaload('https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py'))
   store = SecureKeyValues('iyt', ssh=True)
