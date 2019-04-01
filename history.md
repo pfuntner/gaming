@@ -58,7 +58,7 @@ To set up the credentials:
 
 | Step number | Description | Command |
 | - | - | - |
-| 1 | Download the script.  This is part of my [toys repo](https://github.com/pfuntner/toys) but all you need is one script | `$ wget https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py > SecureKeyValues.py`<br/>`$ chmod +x SecureKeyValues.py` |
+| 1 | Download the script.  This is part of my [toys repo](https://github.com/pfuntner/toys) but all you need is one script | `$ wget https://raw.githubusercontent.com/pfuntner/toys/master/bin/SecureKeyValues.py`<br/>`$ chmod +x SecureKeyValues.py` |
 | 2 | Start the script to create a secure store | `$ ./SecureKeyValues.py --ssh --store iyt --operation set` |
 | 3 | Enter the key names of the values you will enter next | `user`<br/>`password` |
 | 4 | Signal the end of names of values | Press `Ctrl-D` |
