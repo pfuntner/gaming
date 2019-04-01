@@ -240,14 +240,19 @@ def get_games_by_category(session, url, category):
   """
 
   match1 = table_start_regexp.search(html)
+  log.debug('table_start match: {start}, {html!r}'.format(start=match1.start(0) if match1 else None, **locals()))
   if match1:
     # find the end lf this table
     match2 = table_end_regexp.search(html[match1.start(0):])
+    log.debug('table_end match: {end}, {html!r}'.format(
+      end=match2.end(0) if match2 else None,
+      html=html[match1.start(0):]))
     if match2:
       table = html[match1.start(0):match1.start(0)+match2.end(0)]
 
       # split the tables into rows
       rows = tr_regexp.split(table)
+      log.debug('rows: {rows}'.format(**locals()))
       for row in rows[2:-1]:
         # split the row in to columns (cells)
         cols = td_regexp.split(row)
