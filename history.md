@@ -6,11 +6,9 @@ The script:
   1. Logs into IYT
   2. Opens the game status page to learn the user's IYT user id
   3. Opens the user's _user profile_
-  4. For Regular, Tournament, and Ladder games:
-  
-    1. For the wins, losses, and draws for each game:
-    
-      1. Opens all summary pages and collects information about each game: opponent, win/loss, etc.
+  4. For Regular, Tournament, and Ladder games:  
+     1. For the wins, losses, and draws for each game:
+        1. Opens all summary pages and collects information about each game: opponent, win/loss, etc.
 
 ## Isn't this already available?
 Well, yes... the tool actually just parses information off the normal pages on the site.  It doesn't do anything that you can't do but the script does a thorough job much easier and without human error or frustration.
