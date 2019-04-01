@@ -123,10 +123,11 @@ $
 [`headtail`](https://github.com/pfuntner/toys/blob/master/doc/headtail.md) and [`json`](https://github.com/pfuntner/toys/blob/master/doc/json.md) are both tools of mine from another repository.
 
 ## Docker instructions
-If you have the luxury of having Docker installed and can't get the script working on your native machine, try my procedure for running the script inside a Docker container:
+[Docker](https://www.docker.com/) is kind of way to start a lightweight virtual machine and if you have the luxury of having it installed and can't get the script working on your native machine, try my procedure for running the script inside a Docker container:
 
 ```
 $ make
+... make & docker churn for a minute or two - have a drink and come back ...
 $ docker exec -it history bash -c '/tmp/history --u YOUR_IYT_USERID > /tmp/history.csv'
 $ docker exec -it history cat /tmp/history.csv > history.csv
 ```
