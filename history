@@ -114,12 +114,13 @@ def get_iyt_userid(html):
   """
 
   """
-  Through observation, I found many of Javascript statements matching this regular expression but the last instance
-  has the IYT user
+  Through observation, I found many of Javascript statements matching this regular expression
   """
   groups = re.findall('^var d\d+="(.+)";$', html, flags=re.MULTILINE)
-  if groups:
-    match = re.search('^1\^(\d+)\^', groups[-1])
+  for group in groups[-1::-1]:
+    # starting at the last matching group and working backwards, we'll find the first one that could be a userid
+    log.debug('Examining {group!r}'.format(**locals()))
+    match = re.search('^1\^(\d+)\^', group)
     if match:
       return match.group(1)
 

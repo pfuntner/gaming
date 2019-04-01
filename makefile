@@ -2,7 +2,7 @@ all: .run
 
 
 .build: dockerfile history waiter.py
-	docker build -f Dockerfile -t iyt_history .
+	docker build -f dockerfile -t iyt_history .
 	touch .build
 
 kill:
