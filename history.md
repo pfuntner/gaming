@@ -19,7 +19,7 @@ There are basically two choices for history on IYT:
     2. It's not easy collate the games for various purposes.  How about all your games against a specific user?  You can't sort the columns and you're stuck with chronological lists that are organized by wins, losses, or draws.  When I look, I often lose my place and wonder _ok, I see this completed game from the user - was this a win or a loss?_.  No thanks!
   2. You can look at the entire history of all your games but it's organized by category (regular, tournament, ladder), type of game, and win/loss/draw.  Plus, there can be up to ten pages for a particular category, type of game, and outcome.
  
-The script uses the second method of looking at your entire history but automate the navigation through the pages and collecting up the information.  I'm a strong believer that computers are meant to make things easier for people!
+The script uses the second method of looking at your entire history but automates navigation through the pages and collection of the information.  I'm a strong believer that computers are meant to make things easier for people!
  
 Bottom line, the tool is useful to me, it makes sense to me, and I will use it.  If others find it useful, great.  If you don't find a use for it, that's cool too.
 
@@ -27,9 +27,21 @@ Bottom line, the tool is useful to me, it makes sense to me, and I will use it. 
 
 ## Requirements
 
-###
+### Unix-y Environment
 
 The script works best on a Unix system or a Unix-like environment such as [Cygwin](https://www.cygwin.com/) on Windoze.  I imagine it will work well from Mac machines since Mac OS X is a Unix OS.  It might just use a little more TLC to get working on a Windoze machine that doesn't have Python or a decent command shell.
+
+### Python 2.7+ (pre-Python 3)
+
+I know the script requires at least Python 2.7:
+
+```
+$ python --version
+Python 2.7.15
+$
+```
+
+It will not work with Python 3 but I could probably make it work with Python 3.  I usually don't have a need to use Python 3.
 
 ### Credentials
 
