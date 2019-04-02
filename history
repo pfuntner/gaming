@@ -239,7 +239,13 @@ def get_games_by_category(session, url, category):
   tables on the page but I can use a regular expression to find the start of the table in which I have interest.
   """
 
-  match1 = table_start_regexp.search(html)
+  match1 = None
+  for table_start_regexp in table_start_regexps:
+    match1 = table_start_regexp.search(html)
+    if match1:
+      log.debug('matched with {pattern}'.format(pattern=table_start_regexp.pattern))
+      break
+
   log.debug('table_start match: {start}, {html!r}'.format(start=match1.start(0) if match1 else None, **locals()))
   if match1:
     # find the end lf this table
@@ -300,7 +306,10 @@ def dynaload(path):
 BASE_URL = 'https://itsyourturn.com'
 
 # this regular expression finds the table of that contains a summary of types of games
-table_start_regexp = re.compile('<table>\s*<center>\s*<table', flags=re.IGNORECASE)
+table_start_regexps = [
+  re.compile('<table>\s*<center>\s*<table', flags=re.IGNORECASE),
+  re.compile('<caption align=bottom>Click on a number to see the actual games<BR>', flags=re.IGNORECASE),
+]
 
 # this regular expression finds the end of the table found by `table_start_regexp`
 table_end_regexp = re.compile('</table>', flags=re.IGNORECASE)
