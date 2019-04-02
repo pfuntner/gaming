@@ -55,9 +55,10 @@ $ pip install requests
 
 ### Credentials
 
-The script must use your IYT and user and password to login to the site and collect information.  There are two choices:
+The script must use your IYT and user and password to login to the site and collect 
+rmation.  There are two choices:
 
-1. You can have the script prompt you for the inforamtion each time you run it.
+1. You can have the script prompt you for the information each time you run it.
 2. You can set up the userid and password in a _secure store_ so that you don't have to be prompted every time.
 
 #### Credentials in a secure store 
