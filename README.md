@@ -16,4 +16,6 @@ I am just a software developer who plays games at IYT.  I don't work for them an
 
 ## Discussion
 
+Chat with me by [joining my Slack network](https://join.slack.com/t/slackwithbruno/shared_invite/enQtNjAxMDY4MDYzMjUyLTVmNmIzMWQxMjE4MzI4NWZlOWYwMzY2ZTJlOWQ2YjE0ZWRlMjQxMDEzOTgxNjBkYjUxZDE2NjBhZWIzZmRkOTM).
+
 I created a message board at [`itsyourturn.freeforums.net`](http://itsyourturn.freeforums.net) for IYT users and we can talk about the tools there.
