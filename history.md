@@ -4,7 +4,13 @@ Collects IYT game history
 
 The script:
   1. Logs into IYT
-  2. Opens the game status page to learn the user's IYT user id
+  2. Opens the _game status page_ to learn the user's IYT _uid_ - it's stored in a hidden area of the page but is not visible when you look at the game status page in a browser
+  
+     Every IYT user has three items associated with their ID:
+     
+       1. _User ID_: This the name with which you login - I don't think you can change this
+       2. _User name_: This is the name that appears the game status page of your opponents, the move pages of a game, etc. - You can change this on a whim.
+       3. _uid_: This is a long arbitrary integer that, as users, we just see in the URL when we view a user profile.  I'm not even sure what to call this but I'll call it a _uid_ in honour of Unix.  The _uid_ is used form the game summary URLs.
   3. For Regular, Tournament, and Ladder games:  
      1. For the wins, losses, and draws for each game:
         1. Opens all _game summary pages_ and collects information about each game: opponent, win/loss, etc.
