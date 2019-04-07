@@ -160,15 +160,18 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
       # we're ready to retrieve the page
       html = session.get(url).text
 
-      if not pages:
+      if pages is None:
         # figure out how many pages there are
         match = total_games_regexp.search(html)
         if match:
           s2 = match.group(1)
           tokens = page_regexp.split(s2)
-          if match:
-            pages = len(tokens) - 1
-            log.info('{pages} pages'.format(**locals()))
+          log.debug('page_regexp: {tokens} from {group!r}'.format(group=match.group(1), **locals()))
+          pages = len(tokens) - 2
+          log.info('{pages} pages'.format(**locals()))
+        else:
+          log.warning('Assuming one summary page for {category} {game_name} {winloss} games'.format(**locals()))
+          pages = 1
 
       """
       Now comes the fun of parsing out the low-level game information: win/loss, color, moves, date/time, etc.  I was
@@ -203,11 +206,15 @@ def get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, p
       while curr < len(tokens):
         games.append(Game(category, game_name, tokens[curr+2], tokens[curr+1], tokens[curr], winloss, tokens[curr+4],
                           tokens[curr+9], tokens[curr+6], tokens[curr+7]))
-        log.debug('Scraped: {game}'.format(game=str(games[-1])))
+        log.debug('Scraped from token {curr}/{token_count}, page {page}/{pages}: {curr_game}'.format(
+          token_count=len(tokens),
+          curr_game=str(games[-1]),
+          **locals()
+        ))
         curr += 12
 
       # move on to the next page if there is one
-      if pages and page < pages:
+      if page+1 < pages:
         games += get_games_by_winloss(session, category, game_name, winloss, cols, col_pos, page=page+1, pages=pages)
 
   if games:
