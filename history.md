@@ -135,8 +135,10 @@ $ docker exec -it history cat /tmp/history.csv > history.csv
 
 ## Notes
 
-- The script only collects the overall infomation of a game.  It does not collect information about individual moves.
-- The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,171 games at the time of writing this page but only 54,916 are available in the history pages.
+- The script only collects the overall information of a game.  It does not collect information about individual moves.
+- The IYT history pages may not include all your games.  For instance, I've played 1,279 Anti-Backgammon games but only the most recent 1000 are available in the history pages.  I've played a total of 55,266 games at the time of writing this page but only 39,836 (72%) are available in the history pages.  
+
+  A familiar catch phrase in software development is: _Garbage in, Garbage out_. I only have access to 39,836 gamesI wish there was more data available but there isn't and I can't create data out of nothing.
 - You will probably want to redirect stdout to a file that will store your history.
 - See [`history2mysql`](history2mysql.md) for a script to load a CSV into MySQL.
 - I've been able to load a CSV into a _LibreOffice Calc_ spreadsheet (that's what my Linux machine has instead of Excel).  When the file loaded, I had to make sure that it **only** used commas as a field separator.
