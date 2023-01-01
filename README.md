@@ -1,21 +1,7 @@
-# iyt
-Repository for scripts related to ItsYourTurn (aka IYT)
+# gaming
+This repo contains some scripts I've come up with to work with a couple of gaming sites I like to use:
 
-[IsYourTurn.com](https://itsyourturn.com) is a site where people can play a variety of strategy games in a turn-based manner:
-  - Games are usually not completed in a single day - many, especially certain types of games, only last a few days but I've personally played games that lasted months and even more than a year
-  - Two players play each game but the players do not have to be online at the same time.  Each player takes one turn at a time when they are able.  Games can time out if a player does not play their turn within a time limit
-
-I am just a software developer who plays games at IYT.  I don't work for them and I don't develop code for their site.
-
-## Scripts
-
-| Script | Description |
-| ------ | ----------- |
-| [`history`](history.md) | Collects your overall game history and renders to a file format |
-| [`history2mysql`](history2mysql.md) | Uploads overall game history (produced by `history` script) to MySQL database |
-
-## Discussion
-
-Chat with me by [joining my Slack network](https://join.slack.com/t/slackwithbruno/shared_invite/enQtNjAxMDY4MDYzMjUyLTVmNmIzMWQxMjE4MzI4NWZlOWYwMzY2ZTJlOWQ2YjE0ZWRlMjQxMDEzOTgxNjBkYjUxZDE2NjBhZWIzZmRkOTM).
-
-I created a message board at [`itsyourturn.freeforums.net`](http://itsyourturn.freeforums.net) for IYT users and we can talk about the tools there.
+| Folder     | Site                                        | Comments                                                                                                               |
+|------------|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| [iyt](iyt) | [ItsYourTurn.com](http://ItsYourTurn.com)   | completely turn-based games.  I like to play variations of Othello/Reversi, Battleship, Yahtzee, Backgammon            |
+| [bga](bga) | [BoardGameArena](http://boardgamearena.com) | Real-time and turn-based games.  I play Cribbage, Yahtzee (_but I prefer the IYT variations_), Martian Dice, Just One) |
