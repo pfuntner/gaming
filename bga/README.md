@@ -1,4 +1,4 @@
-# iyt
+# bga
 Scripts related to BoardGameArena (aka BGA)
 
 [BoardGameArena.com](https://boardgamearena.com) is a site where people can play a variety of strategy and board games.  Both real-time and turn-based moves games are available and I believe most games work both ways but some are more suited for either one or the other:
