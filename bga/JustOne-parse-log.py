@@ -63,9 +63,10 @@ log.setLevel(logging.WARNING - (args.verbose or 0)*10)
 signal.signal(signal.SIGPIPE, lambda signum, stack_frame: exit(0))
 
 """
-  Sample relative log lines:
+  Sample relative log lines from active game:
+  ===========================================
 
-    $ grep -vP 'retracts|^You scored a point|^Unfortunately|^\d|finished giving clues|Active player is' 2022-12-26-JustOne-330297215.rawlog 
+    $ grep -vP 'retracts|^You scored a point|^Unfortunately|^\d|finished giving clues|Active player is' 2022-12-26-JustOne-330297215.rawlog
     It's time to reveal all clues: fish, piece, Potts, Dale, potato, Potato
     misterbruno decided to skip. The mystery word was "Chip"
     It's time to reveal all clues: cigarette, Container, milk, Milk, Cigarettes, Milk
@@ -89,7 +90,7 @@ signal.signal(signal.SIGPIPE, lambda signum, stack_frame: exit(0))
 
     Did you know?
 
-  The last line is sort of a random message.  There may be more but I've seen the following:
+  The last line in the active log (first log message issued) is sort of a random message.  There may be more but I've seen the following:
 
     - If the game seems stopped or buggy, please refresh the webpage or press F5.
     - Have you found a bug? Please report it to the BGA bug reporting system, including a description and if possible a screenshot. Thank you.
@@ -97,6 +98,40 @@ signal.signal(signal.SIGPIPE, lambda signum, stack_frame: exit(0))
   These were missing so I wonder if entire rounds were missing.  The reply of the game doesn't help very much but I was recording words & clues
   in a OCD-ish spreadsheet and the first word I recorded for this game was `shovel` so it seems complete but I'm not sure that's always going to
   be the case.
+
+  Sample relevant messages from replay log of completed game:
+  ===========================================================
+
+    $ grep -vP '^Move|retracts|^You scored a point|^Unfortunately|^\d|finished giving clues|Active player is' 2023-01-04-JustOne-332693867.rawlog The colors of misterbruno, acerezo have been chosen according to their preferences. Change my preferences.
+    Rematch with the exact same players detected: player order has been swapped.
+    A word "Crocodile" is a perfect match, good job, misterbruno!
+    It's time to reveal all clues: Nile, Reptile, Alligator, Alligator
+    SRX10 thinks the mystery word is "light"
+    The mystery word was "Evening", now it's up to acerezo to decide if the guess was correct
+    It's time to reveal all clues: Dracula, Good, morning, sun
+    acerezo thinks the mystery word is "fungus"
+    The mystery word was "Mushroom", now it's up to misterbruno to decide if the guess was correct
+    It's time to reveal all clues: Phallic, Stuffed, Truffle, Champignon
+    A word "Fever" is a perfect match, good job, misterbruno!
+    It's time to reveal all clues: 38degrees, sick, shiver, heat
+    SRX10 thinks the mystery word is "Furs"
+    The mystery word was "Fur", now it's up to acerezo to decide if the guess was correct
+    acerezo decided that the guess was actually correct
+    It's time to reveal all clues: skin, animal, Faux, Pelt
+    acerezo decided to skip. The mystery word was "Rum"
+    It's time to reveal all clues: Grog, Carribean, Pirates, Alcohol
+    A word "Stylist" is a perfect match, good job, misterbruno!
+    It's time to reveal all clues: clothes, Hairdresser, fashion, Fashion
+    A word "Horse" is a perfect match, good job, SRX10!
+    It's time to reveal all clues: pony, ride, Arabian, Mustang
+    acerezo thinks the mystery word is "flight"
+    The mystery word was "Pilot", now it's up to misterbruno to decide if the guess was correct
+    It's time to reveal all clues: Aviator, Astronaut, Plane, Driver
+    A word "Beach" is a perfect match, good job, misterbruno!
+    It's time to reveal all clues: summer, Malibu, sand, Sand
+    End of game (victory)
+
+  Note that the earliest message is first, which is the opposite of an active game.
 """
 
 # Example line showing mystery word when the guesser skips: 'knitteddove decided to skip. The mystery word was "Shovel"'
@@ -119,11 +154,15 @@ if os.path.exists(args.path):
     with open(args.path) as stream:
       lines = stream.read().splitlines()
 
+    if lines and not lines[0].startswith('Move 1 :'):
+      # the first line of an active log is the most recent so lets reverse the lines to match the log of a completed game
+      lines.reverse() # remember, this method reverses the list in-place and does not have a return value
+
     number_of_clues = None
     word_tuples = list()
 
-    pos = len(lines)-1
-    while pos >= 0:
+    pos = 0
+    while pos < len(lines):
       (mystery_word, guessed_word, clues) = (None, None, list())
       line = lines[pos]
 
@@ -136,14 +175,14 @@ if os.path.exists(args.path):
         match = wrong_clue_regexp.search(line)
         if match:
           guessed_word = match.group(1)
-          while pos >= 0:
+          while pos < len(lines):
             line = lines[pos]
             match = wrong_mystery_regexp.search(line)
             if match:
               mystery_word = match.group(1)
               break
-            pos -= 1
-          assert mystery_word and pos >= 0, f'Failed to find mystery word when guess was {guessed_word!r}'
+            pos += 1
+          assert mystery_word and pos < len(lines), f'Failed to find mystery word when guess was {guessed_word!r}'
         else:
           # look to see if the guess was correct about the mystery word
           match = right_mystery_regexp.search(line)
@@ -153,7 +192,7 @@ if os.path.exists(args.path):
 
       if mystery_word:
         # now that we know the mystery word, find all the clues
-        while pos >= 0:
+        while pos < len(lines):
           line = lines[pos]
           match = clues_regexp.search(line)
           if match:
@@ -164,11 +203,11 @@ if os.path.exists(args.path):
             word_tuples.append([mystery_word, guessed_word] + clues)
 
             break
-          pos -= 1
-        assert clues and pos >= 0, f'Failed to find clues when mystery word was {mystery_word!r}'
+          pos += 1
+        assert clues and pos < len(lines), f'Failed to find clues when mystery word was {mystery_word!r}'
 
       log.debug(f'{pos:3} {line!r} mystery={mystery_word!r} guess={guessed_word!r} clues={clues}')
-      pos -= 1
+      pos += 1
 
     if number_of_clues:
       columns = ['Word number', 'Mystery word', 'Guess']
